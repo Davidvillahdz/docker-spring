@@ -153,6 +153,7 @@ docker restart test_app
 ###### Banco de Respuestas Escritas
 Pregunta Parte 2: Ventaja del orden de copia de archivos en el Dockerfile.
 Respuesta: Optimiza el uso de la caché de capas de Docker. Al copiar el archivo pom.xml y ejecutar mvn dependency:go-offline antes de transferir el código fuente, las dependencias pesadas se descargan e instalan una sola vez y quedan congeladas en la caché. Si se hiciera en orden inverso (colocando COPY . . al inicio), cualquier cambio mínimo en un archivo de texto o un controlador de Java invalidaría toda la caché posterior, obligando al contenedor a volver a descargar megabytes de librerías de internet en cada build, rompiendo la agilidad de Integración Continua (CI).
+
 Pregunta Parte 3: ¿Qué información agregar en Docker Hub?
 Respuesta: Se debe documentar en la descripción del repositorio (README público):
 
@@ -163,6 +164,7 @@ El mapeo de puertos requerido (especificar que el punto de entrada es el puerto 
 El volumen mandatorio para la persistencia del inventario (-v /ruta/host:/app/data), advirtiendo que de no mapearse, los datos se perderán al destruir el contenedor.
 
 La lista de rutas HTTP y verbos del CRUD disponibles (ej. GET /health y POST /productos) para su consumo inmediato.
+
 Pregunta Parte 4: Retardo en el arranque (Spring Boot 15s vs Nginx 1s).
 Respuesta: Provoca un error 502 Bad Gateway. Nginx arranca de forma casi instantánea e intentará redirigir el tráfico del puerto 80 hacia el backend; sin embargo, al encontrarse con que la Máquina Virtual de Java (JVM) sigue en proceso de inicialización y no ha abierto el socket en el puerto 5000, el proxy inverso fallará y retornará un error al cliente.
 Solución: Implementar una instrucción de Healthcheck en el Dockerfile o utilizar utilidades de control de flujo como wait-for-it.sh en el script de Supervisor. Esto retarda el inicio de Nginx o bloquea el ruteo de peticiones externas hasta que el puerto 5000 responda exitosamente con un código de estado HTTP 200 en la ruta /health.
